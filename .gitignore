@@ -61,7 +61,7 @@ writable/uploads/*
 !writable/uploads/index.html
 
 writable/debugbar/*
-!writable/debugbar/index.html
+!writable/debugbar/.gitkeep
 
 php_errors.log
 
@@ -84,7 +84,12 @@ phpunit
 #-------------------------
 # Composer
 #-------------------------
-vendor/
+/vendor
+
+#-------------------------
+# Node
+#-------------------------
+node_modules/
 
 #-------------------------
 # IDE / Development Files
