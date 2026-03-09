@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title><?= esc($title) ?> - <?= esc(config('App')->siteName) ?></title>
+        <meta name="theme-color" content="#282A36">
         <!-- Favicon and touch icons -->
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
@@ -14,7 +15,7 @@
         <link rel="stylesheet" href="/assets/css/<?= $file ?>.css<?= file_exists($cssPath) ? '?v=' . filemtime($cssPath) : '' ?>">
         <?php endforeach; endif; ?>
         <!-- JavaScript -->
-        <script src="<?= config('Urls')->assets ?>assets/js/vendor/bootstrap.bundle.min.js"></script>
+        <script defer src="<?= config('Urls')->assets ?>assets/js/vendor/bootstrap.bundle.min.js"></script>
         <?php if(isset($js)): foreach ($js as $file): $jsPath = FCPATH . 'assets/js/' . $file . '.js'; ?>
         <script defer src="/assets/js/<?= $file ?>.js<?= file_exists($jsPath) ? '?v=' . filemtime($jsPath) : '' ?>"></script>
         <?php endforeach; endif; ?>
