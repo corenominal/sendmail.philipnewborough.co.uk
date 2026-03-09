@@ -5,21 +5,15 @@ namespace App\Controllers;
 class Home extends BaseController
 {
     /**
-     * Display the home page
+     * Index
      *
-     * Renders the home view with associated stylesheets and scripts.
-     * Sets up the page title and passes data to the view layer.
+     * Redirects to the admin panel.
+     * Admin only.
      *
-     * @return string The rendered home view
+     * @return \CodeIgniter\HTTP\RedirectResponse
      */
-    public function index(): string
+    public function index()
     {
-        // Array of javascript files to include
-        $data['js'] = ['home'];
-        // Array of CSS files to include
-        $data['css'] = ['home'];
-        // Set the page title
-        $data['title'] = 'Template Home';
-        return view('home', $data);
+        return redirect()->to('/admin');
     }
 }
