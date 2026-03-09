@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Mark sidebar active link
     const sidebarLinks = document.querySelectorAll("#sidebar .nav-link");
     sidebarLinks.forEach(link => {
         if (link.getAttribute("href") === "/admin") {
@@ -6,167 +8,236 @@ document.addEventListener("DOMContentLoaded", function() {
             link.classList.add("active");
         }
     });
-});
 
-document.addEventListener("DOMContentLoaded", function() {
+    // Active filter state
+    let activeFilter = 'all';
 
-    const exampleTable = new DataTable('#example-table', {
-
-        // ── Layout & UI ────────────────────────────────────────────────────────
-        autoWidth:      true,           // Auto-calculate column widths
-        info:           true,           // Show "Showing X to Y of Z entries"
-        lengthChange:   true,           // Allow user to change page length
-        ordering:       true,           // Enable column sorting
-        paging:         true,           // Enable pagination
-        searching:      true,           // Enable global search box
-        orderMulti:     true,           // Allow multi-column sort (shift+click)
-        orderClasses:   true,           // Add sorting CSS classes to columns
-        pagingType:     'simple_numbers', // 'simple' | 'simple_numbers' | 'full' | 'full_numbers' | 'first_last_numbers'
-        pageLength:     10,             // Rows per page
-        lengthMenu:     [10, 25, 50, 100], // Page length options
-
-        // ── Default sort ───────────────────────────────────────────────────────
-        order: [[0, 'asc']],            // [[columnIndex, 'asc'|'desc'], ...]
-
-        // ── Performance ────────────────────────────────────────────────────────
-        deferRender:    false,          // Defer rendering off-screen rows (useful for large datasets)
-        processing:     false,          // Show a processing indicator (useful with serverSide)
-        serverSide:     false,          // Enable server-side processing (requires ajax option)
-        stateSave:      false,          // Persist state (paging, sorting, search) in sessionStorage
-
-        // ── Data source ────────────────────────────────────────────────────────
-        // ajax: '/api/example-table',  // URL or config object for server-side / ajax data loading
-        // data: [],                    // Inline JS data array (alternative to HTML or ajax)
-
-        // ── Scroll ─────────────────────────────────────────────────────────────
-        scrollX:        false,          // Horizontal scrolling
-        scrollY:        '',             // Vertical scroll height, e.g. '400px'
-        scrollCollapse: false,          // Shrink table when fewer rows than scrollY height
-
-        // ── Column definitions ─────────────────────────────────────────────────
-        columns: [
-            {
-                // Column 0 — #
-                name:        'id',
-                title:       '#',
-                type:        'num',         // 'string' | 'num' | 'num-fmt' | 'html' | 'html-num' | 'date'
-                orderable:   true,
-                searchable:  false,         // No value in searching the row number
-                visible:     true,
-                width:       '3rem',
-                className:   'text-end',
-            },
-            {
-                // Column 1 — First Name
-                name:        'first_name',
-                title:       'First Name',
-                type:        'string',
-                orderable:   true,
-                searchable:  true,
-                visible:     true,
-                width:       '',            // Leave empty to let autoWidth decide
-                className:   '',
-            },
-            {
-                // Column 2 — Last Name
-                name:        'last_name',
-                title:       'Last Name',
-                type:        'string',
-                orderable:   true,
-                searchable:  true,
-                visible:     true,
-                width:       '',
-                className:   '',
-            },
-            {
-                // Column 3 — Email
-                name:        'email',
-                title:       'Email',
-                type:        'string',
-                orderable:   true,
-                searchable:  true,
-                visible:     true,
-                width:       '',
-                className:   '',
-            },
-            {
-                // Column 4 — Role
-                name:        'role',
-                title:       'Role',
-                type:        'string',
-                orderable:   true,
-                searchable:  true,
-                visible:     true,
-                width:       '',
-                className:   '',
-            },
-            {
-                // Column 5 — Status (contains HTML, so we use a custom render function to ensure sorting and searching work on the text content, not the HTML)
-                name:        'status',
-                title:       'Status',
-                type:        'string',
-                orderable:   true,
-                searchable:  true,
-                visible:     true,
-                width:       '6rem',
-                className:   'text-center',
-                render: function(data, type, row) {
-                    if (type === 'sort' || type === 'filter') {
-                        const tmp = document.createElement('div');
-                        tmp.innerHTML = data;
-                        return tmp.textContent || tmp.innerText || '';
-                    }
-                    return data;
-                },
-            },
-            {
-                // Column 6 — Joined (ISO date string sorts correctly as a string)
-                name:        'joined',
-                title:       'Joined',
-                type:        'date',
-                orderable:   true,
-                searchable:  false,
-                visible:     true,
-                width:       '7rem',
-                className:   '',
-            },
-        ],
-
-        // ── Language / localisation ────────────────────────────────────────────
-        language: {
-            emptyTable:     'No data available in table',
-            info:           'Showing _START_ to _END_ of _TOTAL_ entries',
-            infoEmpty:      'Showing 0 to 0 of 0 entries',
-            infoFiltered:   '(filtered from _MAX_ total entries)',
-            lengthMenu:     'Show _MENU_ entries',
-            loadingRecords: 'Loading...',
-            processing:     'Processing...',
-            search:         'Search:',
-            zeroRecords:    'No matching records found',
-            paginate: {
-                first:    'First',
-                last:     'Last',
-                next:     'Next',
-                previous: 'Previous',
+    // Initialise DataTable
+    const table = $('#messages-datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/admin/messages/datatable',
+            data: function(d) {
+                d.filter = activeFilter;
             },
         },
-
-        // ── Callbacks ──────────────────────────────────────────────────────────
-        // initComplete: function(settings, json) {},   // Fires once table is fully initialised
-        // drawCallback: function(settings) {},         // Fires on every draw (page change, sort, search)
-        // rowCallback:  function(row, data, index) {}, // Fires for each row on every draw
-        // createdRow:   function(row, data, index) {}, // Fires once per row when the TR element is created
-        // headerCallback: function(thead, data, start, end, display) {},
-
+        columns: [
+            { data: 'id',         title: '#',       orderable: true  },
+            { data: 'from',       title: 'From',    orderable: true  },
+            { data: 'to',         title: 'To',      orderable: true  },
+            { data: 'subject',    title: 'Subject', orderable: true  },
+            { data: 'mailtype',   title: 'Type',    orderable: true  },
+            { data: 'created_at', title: 'Created', orderable: true  },
+            { data: 'sent_at',    title: 'Sent',    orderable: true,
+              render: function(data) { return data ? data : '<span class="badge bg-primary text-dark">Pending</span>'; } },
+            { data: 'actions',    title: 'Actions', orderable: false, searchable: false },
+        ],
+        order: [[0, 'desc']],
+        columnDefs: [
+            { targets: 7, className: 'text-nowrap' },
+        ],
+        rowCallback: function(row, data) {
+            if (data.sent_at) {
+                $(row).addClass('sent');
+            }
+        },
+        drawCallback: function() {
+            document.querySelectorAll('#messages-datatable [data-bs-toggle="tooltip"]').forEach(function(el) {
+                bootstrap.Tooltip.getOrCreateInstance(el);
+            });
+        },
     });
 
-    // ── Refresh button ─────────────────────────────────────────────────────────
+    // Refresh stats cards
+    function refreshStats() {
+        fetch('/admin/messages/stats')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                document.getElementById('stat-pending').textContent    = data.pending;
+                document.getElementById('stat-sent-today').textContent = data.sent_today;
+                document.getElementById('stat-sent-month').textContent = data.sent_month;
+                document.getElementById('stat-total').textContent      = data.total;
+            });
+    }
+
+    // Refresh button
     document.getElementById('btn-datatable-refresh').addEventListener('click', function() {
-        // exampleTable.ajax.reload(null, false); // null keeps current page; false = don't reset paging
-        // For non-ajax tables use exampleTable.draw() to simply redraw:
-        exampleTable.draw();
-        console.log('Table refreshed');
+        table.ajax.reload(null, false);
+        refreshStats();
+    });
+
+    // Filter dropdown
+    document.querySelectorAll('[data-filter]').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            activeFilter = this.dataset.filter;
+            document.getElementById('filter-label').textContent = this.textContent.trim();
+            document.querySelectorAll('[data-filter]').forEach(function(el) {
+                el.classList.toggle('active', el.dataset.filter === activeFilter);
+            });
+            table.ajax.reload(null, false);
+        });
+    });
+
+    // Shared helpers
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // View modal
+    const viewModalEl = document.getElementById('modal-view-message');
+    const viewModal   = new bootstrap.Modal(viewModalEl);
+
+    document.getElementById('messages-datatable').addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-view-message');
+        if (!btn) return;
+
+        const id = parseInt(btn.dataset.id, 10);
+        fetch('/admin/messages/' + id)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                // Build details list
+                const fields = [
+                    ['From',    data.from],
+                    ['To',      data.to],
+                    data.cc  ? ['CC',  data.cc]  : null,
+                    data.bcc ? ['BCC', data.bcc] : null,
+                    ['Subject', data.subject],
+                    ['Type',    data.mailtype],
+                    ['Created', data.created_at],
+                    data.sent_at ? ['Sent At', data.sent_at] : null,
+                ];
+                document.getElementById('view-message-details').innerHTML = fields
+                    .filter(Boolean)
+                    .map(function(pair) {
+                        return '<dt class="col-sm-3">' + escapeHtml(pair[0]) + '</dt>'
+                             + '<dd class="col-sm-9">' + escapeHtml(pair[1]) + '</dd>';
+                    })
+                    .join('');
+
+                // Render body
+                const bodyEl = document.getElementById('view-message-body');
+                bodyEl.innerHTML = '';
+                if (data.mailtype === 'html') {
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('sandbox', 'allow-same-origin');
+                    iframe.style.cssText = 'width:100%;border:none;min-height:200px;';
+                    bodyEl.appendChild(iframe);
+                    iframe.addEventListener('load', function() {
+                        try {
+                            iframe.style.height = iframe.contentDocument.body.scrollHeight + 32 + 'px';
+                        } catch (err) {
+                            iframe.style.height = '400px';
+                        }
+                    });
+                    iframe.srcdoc = data.body || '';
+                } else {
+                    const pre = document.createElement('pre');
+                    pre.className = 'mb-0';
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.textContent = data.body || '';
+                    bodyEl.appendChild(pre);
+                }
+
+                viewModal.show();
+            })
+            .catch(function() {
+                alert('Failed to load message.');
+            });
+    });
+
+    // Resend modal
+    const resendModalEl  = document.getElementById('modal-resend-message');
+    const resendModal    = new bootstrap.Modal(resendModalEl);
+    let   pendingResendId = null;
+
+    resendModalEl.addEventListener('hidden.bs.modal', function() {
+        const btn = document.getElementById('btn-confirm-resend');
+        btn.disabled = false;
+        btn.innerHTML = 'Resend';
+    });
+
+    document.getElementById('messages-datatable').addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-resend-message');
+        if (!btn) return;
+        pendingResendId = parseInt(btn.dataset.id, 10);
+        resendModal.show();
+    });
+
+    document.getElementById('btn-confirm-resend').addEventListener('click', function() {
+        if (!pendingResendId) return;
+        const id = pendingResendId;
+        pendingResendId = null;
+
+        const btn = document.getElementById('btn-confirm-resend');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Resending&hellip;';
+
+        fetch('/admin/messages/' + id + '/resend', { method: 'POST' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    resendModal.hide();
+                    table.ajax.reload(null, false);
+                    refreshStats();
+                } else {
+                    alert('Resend failed: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(function() {
+                alert('Failed to resend message.');
+            });
+    });
+
+    // Delete modal
+    const deleteModalEl  = document.getElementById('modal-delete-message');
+    const deleteModal    = new bootstrap.Modal(deleteModalEl);
+    let   pendingDeleteId = null;
+
+    deleteModalEl.addEventListener('hidden.bs.modal', function() {
+        const btn = document.getElementById('btn-confirm-delete');
+        btn.disabled = false;
+        btn.innerHTML = 'Delete';
+    });
+
+    document.getElementById('messages-datatable').addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-delete-message');
+        if (!btn) return;
+        pendingDeleteId = parseInt(btn.dataset.id, 10);
+        deleteModal.show();
+    });
+
+    document.getElementById('btn-confirm-delete').addEventListener('click', function() {
+        if (!pendingDeleteId) return;
+        const id = pendingDeleteId;
+        pendingDeleteId = null;
+
+        const btn = document.getElementById('btn-confirm-delete');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Deleting&hellip;';
+
+        fetch('/admin/messages/' + id, { method: 'DELETE' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    deleteModal.hide();
+                    table.ajax.reload(null, false);
+                    refreshStats();
+                } else {
+                    alert('Delete failed: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(function() {
+                alert('Failed to delete message.');
+            });
     });
 
 });
+
 
