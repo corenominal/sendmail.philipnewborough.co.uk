@@ -20,6 +20,7 @@
                     </div>
 
                     <button type="button" class="btn btn-outline-primary" id="btn-datatable-refresh"><i class="bi bi-arrow-clockwise"></i><span class="d-none d-lg-inline"> Refresh</span></button>
+                    <button type="button" class="btn btn-outline-danger" id="btn-delete-pending"><i class="bi bi-trash"></i><span class="d-none d-lg-inline"> Delete Pending</span></button>
                 </div>
             </div>
 
@@ -112,6 +113,25 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="btn-confirm-resend">Resend</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Pending Confirm Modal -->
+<div class="modal fade" id="modal-delete-pending" tabindex="-1" aria-labelledby="modalDeletePendingLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDeletePendingLabel">Delete Pending Messages</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Are you sure you want to delete all pending messages from the queue? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="btn-confirm-delete-pending">Delete Pending</button>
             </div>
         </div>
     </div>

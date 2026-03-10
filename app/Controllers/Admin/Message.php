@@ -84,6 +84,23 @@ class Message extends BaseController
     }
 
     /**
+     * Soft-delete all pending (unsent) messages.
+     *
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function deletePending()
+    {
+        $model = new MessageModel();
+        $ids   = $model->where('sent_at IS NULL')->findColumn('id');
+
+        if (!empty($ids)) {
+            $model->delete($ids);
+        }
+
+        return $this->response->setJSON(['success' => true, 'deleted' => count($ids ?? [])]);
+    }
+
+    /**
      * Soft-delete a message by ID.
      *
      * @param int $id

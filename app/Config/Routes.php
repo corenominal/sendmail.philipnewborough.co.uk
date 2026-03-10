@@ -13,6 +13,7 @@ $routes->get('/admin/messages/datatable', 'Admin\Message::datatableData');
 $routes->get('/admin/messages/stats', 'Admin\Message::stats');
 $routes->get('/admin/messages/(:num)', 'Admin\Message::get/$1');
 $routes->post('/admin/messages/(:num)/resend', 'Admin\Message::resend/$1');
+$routes->delete('/admin/messages/pending', 'Admin\Message::deletePending');
 $routes->delete('/admin/messages/(:num)', 'Admin\Message::delete/$1');
 
 // API routes

@@ -7,7 +7,7 @@ A CodeIgniter 4 application that provides a centralised email queuing and delive
 - **REST API** — accepts incoming email messages via `POST /api/message`, authenticated with a master API key
 - **Message queue** — stores messages in a MySQL `messages` table with UUID tracking, soft deletes, and timestamps
 - **CLI processor** — a cron-driven command (`cli/sendmail process`) that processes up to 10 pending messages per run, with a built-in rate limit of 80 messages per 60 minutes
-- **Admin panel** — a protected web UI at `/admin` with DataTables server-side pagination, live stats (pending, sent today, sent this month, total), and per-message actions (view, resend, delete)
+- **Admin panel** — a protected web UI at `/admin` with DataTables server-side pagination, live stats (pending, sent today, sent this month, total), per-message actions (view, resend, delete), and a bulk "Delete Pending" action to clear all unsent messages from the queue in one step
 - **`Sendmail` library** — a fluent PHP client library for submitting messages to this service from other applications
 
 ## API

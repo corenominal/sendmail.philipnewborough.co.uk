@@ -46,8 +46,15 @@ document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll('#messages-datatable [data-bs-toggle="tooltip"]').forEach(function(el) {
                 bootstrap.Tooltip.getOrCreateInstance(el);
             });
+            updateDeletePendingBtn();
         },
     });
+
+    // Toggle the Delete Pending button based on the current pending count
+    function updateDeletePendingBtn() {
+        const pending = parseInt(document.getElementById('stat-pending').textContent, 10);
+        document.getElementById('btn-delete-pending').disabled = (pending === 0);
+    }
 
     // Refresh stats cards
     function refreshStats() {
@@ -58,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('stat-sent-today').textContent = data.sent_today;
                 document.getElementById('stat-sent-month').textContent = data.sent_month;
                 document.getElementById('stat-total').textContent      = data.total;
+                updateDeletePendingBtn();
             });
     }
 
@@ -192,6 +200,41 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(function() {
                 alert('Failed to resend message.');
+            });
+    });
+
+    // Delete pending modal
+    const deletePendingModalEl = document.getElementById('modal-delete-pending');
+    const deletePendingModal   = new bootstrap.Modal(deletePendingModalEl);
+
+    deletePendingModalEl.addEventListener('hidden.bs.modal', function() {
+        const btn = document.getElementById('btn-confirm-delete-pending');
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Pending';
+    });
+
+    document.getElementById('btn-delete-pending').addEventListener('click', function() {
+        deletePendingModal.show();
+    });
+
+    document.getElementById('btn-confirm-delete-pending').addEventListener('click', function() {
+        const btn = document.getElementById('btn-confirm-delete-pending');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Deleting&hellip;';
+
+        fetch('/admin/messages/pending', { method: 'DELETE' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    deletePendingModal.hide();
+                    table.ajax.reload(null, false);
+                    refreshStats();
+                } else {
+                    alert('Delete failed: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(function() {
+                alert('Failed to delete pending messages.');
             });
     });
 
