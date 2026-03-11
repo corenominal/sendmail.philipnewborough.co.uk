@@ -37,6 +37,8 @@ final class Sendmail extends BaseController
      * 
      * Usage example:
      * sudo -u _www php /path/to/codeigniter/public/index.php cli/sendmail process
+     * or
+     * php public/index.php cli/sendmail process
      * @return void
      */
     public function process()
@@ -63,10 +65,15 @@ final class Sendmail extends BaseController
         // Check if there are any messages to send
         if (empty($messages)) {
             CLI::write('No messages to send', 'yellow');
+            // Log the message and exit
+            logit('No messages to send', 0);
             return;
         } else {
             CLI::write('Found ' . count($messages) . ' messages to send ...');
         }
+
+        // Set count for number of messages sent in this batch
+        $sent_count = 0;
 
         // Loop through the messages
         foreach ($messages as $message) {
@@ -95,6 +102,8 @@ final class Sendmail extends BaseController
                     'deleted_at' => date('Y-m-d H:i:s'),
                 ]);
                 CLI::write('Message ' . $message['id'] . ' marked as failed', 'red');
+                // Log the error message
+                logit('Error sending message ' . $message['id'], 2);
                 continue;
             }
             // If the email was sent successfully, update the message as sent
@@ -102,8 +111,13 @@ final class Sendmail extends BaseController
                 'sent_at' => date('Y-m-d H:i:s'),
                 'deleted_at' => null,
             ]);
+            // Increment the sent count
+            $sent_count++;
             // Log the success
             CLI::write('Message ' . $message['id'] . ' sent successfully', 'green');
         }
+        CLI::write('Total messages sent in this batch: ' . $sent_count, 'green');
+        // Log the total messages sent in this batch
+        logit('Total messages sent in this batch: ' . $sent_count, 0);
     }
 }
