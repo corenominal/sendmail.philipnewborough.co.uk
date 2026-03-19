@@ -25,6 +25,9 @@ $routes->cli('cli/test/index/(:segment)', 'CLI\Test::index/$1');
 $routes->cli('cli/test/count', 'CLI\Test::count');
 $routes->cli('cli/sendmail/process', 'CLI\Sendmail::process');
 
+// Metrics route
+$routes->post('/metrics/receive', 'Metrics::receive');
+
 // Logout route
 $routes->get('/logout', 'Auth::logout');
 
